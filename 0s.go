@@ -1,6 +1,6 @@
-//**********************************************************************
+// **********************************************************************
 // Copyright (C) 2025 J.P. Liguori (jpl@ozf.fr)
-//**********************************************************************
+// **********************************************************************
 package main
 
 import (
@@ -384,10 +384,10 @@ func copy(src, dest string) error {
 func printUsage() {
 	fmt.Println("Usage: 0s <command>")
 	fmt.Println("Commands:")
-	fmt.Println("  list      - List all available repositories")
+	fmt.Println("  list       - List all available repositories")
 	fmt.Println("  set <repo> - Set the current repository")
-	fmt.Println("  show      - Show files in the current repository")
-	fmt.Println("  cd <dir>  - Change the current directory for the repository")
+	fmt.Println("  show       - Show files in the current repository")
+	fmt.Println("  cd <dir>   - Change the current directory for the repository")
 	fmt.Println("  get <name> - Get a file or folder from the current repository")
 	fmt.Println("  put <name> - Put a file or folder in the current repository")
 }
@@ -460,15 +460,15 @@ func downloadDirectory(sftp *sftp.Client, remotePath, localPath string) error {
 		if walker.Err() != nil {
 			return fmt.Errorf("error walking remote directory: %v", walker.Err())
 		}
-		
+
 		relPath := walker.Path()[len(remotePath):]
 		if relPath == "" {
 			continue
 		}
-		
+
 		localItemPath := filepath.Join(localPath, relPath)
 		remoteItemPath := walker.Path()
-		
+
 		if walker.Stat().IsDir() {
 			err = os.MkdirAll(localItemPath, os.ModePerm)
 			if err != nil {
@@ -509,7 +509,7 @@ func changeDirectory(config *Config, newDir string) {
 		if repo.Path == "" {
 			repo.Path = "."
 		}
-		
+
 		client, err := getSSHClient(&repo)
 		if err != nil {
 			fmt.Println("Error connecting to SSH server:", err)
@@ -537,7 +537,7 @@ func changeDirectory(config *Config, newDir string) {
 			fmt.Printf("Error: remote path '%s' is not a directory.\n", newPath)
 			os.Exit(1)
 		}
-		
+
 		repo.Path = newPath
 
 	default:
