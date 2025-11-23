@@ -113,7 +113,43 @@ func printVersion() {
 	fmt.Printf("%s.%s-%s\n", majorVersion, minorVersion, gitCommit)
 }
 
+func createDefaultConfig() *Config {
+	return &Config{
+		Current: "localrepo",
+		Repositories: map[string]Repository{
+			"localrepo": {
+				Type: "local",
+				Path: "/tmp/0s_local",
+			},
+			"sshrepo": {
+				Type:       "ssh",
+				Host:       "your_ssh_host",
+				Port:       22,
+				User:       "your_user",
+				PrivateKey: "/home/your_user/.ssh/id_rsa",
+				Path:       "/home/your_user/remote_dir",
+			},
+		},
+	}
+}
+
 func loadConfig() (*Config, error) {
+	// Check if config file exists
+	if _, err := os.Stat(configFilePath); os.IsNotExist(err) {
+		fmt.Printf("Configuration file not found at '%s'. Creating a default config.\n", configFilePath)
+		defaultConfig := createDefaultConfig()
+		err := saveConfig(defaultConfig)
+		if err != nil {
+			return nil, fmt.Errorf("error saving default configuration: %w", err)
+		}
+		fmt.Println("Default configuration created with sample repositories. Please edit it to set up your repositories.\n")
+		// Ensure the directory for /tmp/0s_local is created if it's the default path for localrepo
+		localRepoPath := defaultConfig.Repositories["localrepo"].Path
+		if localRepoPath != "" {
+			os.MkdirAll(localRepoPath, 0755)
+		}
+	}
+
 	// Open config file
 	configFile, err := os.Open(configFilePath)
 	if err != nil {
