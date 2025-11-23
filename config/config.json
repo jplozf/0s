@@ -1,0 +1,21 @@
+{
+  "current": "thalassa",
+  "repositories": {
+    "downloads": {
+      "type": "local",
+      "path": "/home/jpl/Téléchargements/recup"
+    },
+    "freebox": {
+      "type": "network",
+      "path": "/mnt/freebox/Films"
+    },
+    "thalassa": {
+      "type": "ssh",
+      "path": "/home/jpl/.goblin",
+      "host": "thalassa.ozf.fr",
+      "port": 22,
+      "user": "jpl",
+      "private_key": "/home/jpl/.ssh/id_ed25519"
+    }
+  }
+}
