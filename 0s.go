@@ -16,6 +16,25 @@ import (
 	"golang.org/x/crypto/ssh"
 )
 
+var configFilePath string
+
+func init() {
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		fmt.Printf("Error getting user home directory: %v\n", err)
+		os.Exit(1)
+	}
+
+	appDir := filepath.Join(homeDir, ".0s")
+	err = os.MkdirAll(appDir, 0755)
+	if err != nil {
+		fmt.Printf("Error creating application directory '%s': %v\n", appDir, err)
+		os.Exit(1)
+	}
+
+	configFilePath = filepath.Join(appDir, "config.json")
+}
+
 type Config struct {
 	Current      string                `json:"current"`
 	Repositories map[string]Repository `json:"repositories"`
@@ -30,6 +49,12 @@ type Repository struct {
 	PrivateKey string `json:"private_key,omitempty"`
 	Password   string `json:"password,omitempty"`
 }
+
+var (
+	majorVersion = "0"
+	minorVersion = ""
+	gitCommit    = ""
+)
 
 func main() {
 	// Load configuration
@@ -77,14 +102,20 @@ func main() {
 			os.Exit(1)
 		}
 		changeDirectory(config, args[1])
+	case "version":
+		printVersion()
 	default:
 		printUsage()
 	}
 }
 
+func printVersion() {
+	fmt.Printf("%s.%s-%s\n", majorVersion, minorVersion, gitCommit)
+}
+
 func loadConfig() (*Config, error) {
 	// Open config file
-	configFile, err := os.Open("config/config.json")
+	configFile, err := os.Open(configFilePath)
 	if err != nil {
 		return nil, err
 	}
@@ -111,7 +142,7 @@ func saveConfig(config *Config) error {
 	}
 
 	// Write config file
-	err = ioutil.WriteFile("config/config.json", byteValue, 0644)
+	err = ioutil.WriteFile(configFilePath, byteValue, 0644)
 	if err != nil {
 		return err
 	}
@@ -382,6 +413,9 @@ func copy(src, dest string) error {
 }
 
 func printUsage() {
+	fmt.Printf("0s %s.%s-%s - https://github.com/jplozf/0s\n", majorVersion, minorVersion, gitCommit)
+	fmt.Printf("Configuration file can be found at %s\n", configFilePath)
+	fmt.Println("")
 	fmt.Println("Usage: 0s <command>")
 	fmt.Println("Commands:")
 	fmt.Println("  list       - List all available repositories")
